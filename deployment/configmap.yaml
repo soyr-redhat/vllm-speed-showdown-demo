@@ -5,6 +5,6 @@ metadata:
   labels:
     app: speed-showdown
 data:
-  vllm-url: "http://vllm-service:8000/v1"
-  standard-llm-url: "https://api.openai.com/v1"
-  model-name: "gpt-3.5-turbo"
+  vllm-url: "https://maas.apps.ocp.cloud.rhai-tmm.dev/v1"
+  standard-llm-url: "https://maas.apps.ocp.cloud.rhai-tmm.dev/v1"
+  model-name: "Qwen/Qwen3.5-9B"
