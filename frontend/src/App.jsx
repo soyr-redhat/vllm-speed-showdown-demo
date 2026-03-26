@@ -23,7 +23,9 @@ function App() {
     setVllmTokens([])
     setResults(null)
 
-    const wsUrl = API_URL.replace('http', 'ws')
+    // Convert http/https to ws/wss for WebSocket
+    const wsUrl = API_URL.replace('https://', 'wss://').replace('http://', 'ws://')
+    console.log('Connecting to WebSocket:', `${wsUrl}/ws/race`)
     const ws = new WebSocket(`${wsUrl}/ws/race`)
 
     ws.onopen = () => {
@@ -68,7 +70,11 @@ function App() {
     ws.onerror = (error) => {
       console.error('WebSocket error:', error)
       setRaceState('idle')
-      alert('Connection error. Make sure the backend is running.')
+      alert('Connection error. Check console for details.')
+    }
+
+    ws.onclose = () => {
+      console.log('WebSocket closed')
     }
   }
 

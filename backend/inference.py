@@ -7,15 +7,24 @@ from models import TokenEvent
 
 class InferenceEngine:
     def __init__(self):
+        vllm_api_key = os.getenv("VLLM_API_KEY", "")
+        standard_api_key = os.getenv("STANDARD_API_KEY", "")
+
+        print(f"Initializing InferenceEngine")
+        print(f"VLLM_URL: {os.getenv('VLLM_URL')}")
+        print(f"VLLM_API_KEY set: {bool(vllm_api_key)}")
+        print(f"STANDARD_LLM_URL: {os.getenv('STANDARD_LLM_URL')}")
+        print(f"MODEL_NAME: {os.getenv('MODEL_NAME')}")
+
         # vLLM endpoint (optimized)
         self.vllm_client = AsyncOpenAI(
-            api_key=os.getenv("VLLM_API_KEY", ""),
+            api_key=vllm_api_key,
             base_url=os.getenv("VLLM_URL", "http://localhost:8000/v1")
         )
 
         # Standard endpoint (for comparison)
         self.standard_client = AsyncOpenAI(
-            api_key=os.getenv("STANDARD_API_KEY", ""),
+            api_key=standard_api_key,
             base_url=os.getenv("STANDARD_LLM_URL", "https://api.openai.com/v1")
         )
 
@@ -39,6 +48,7 @@ class InferenceEngine:
         token_count = 0
 
         try:
+            print(f"[{racer}] Starting inference with model: {self.model_name}, prompt length: {len(prompt)}")
             stream = await client.chat.completions.create(
                 model=self.model_name,
                 messages=[{"role": "user", "content": prompt}],
@@ -47,6 +57,7 @@ class InferenceEngine:
                 temperature=0.7
             )
 
+            print(f"[{racer}] Stream created, waiting for tokens...")
             async for chunk in stream:
                 if chunk.choices and chunk.choices[0].delta.content:
                     token = chunk.choices[0].delta.content
