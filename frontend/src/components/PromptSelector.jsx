@@ -11,7 +11,7 @@ const SAMPLE_PROMPTS = [
 function PromptSelector({ selectedPrompt, setSelectedPrompt, onStart, isRacing }) {
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-redhat-dark-surface rounded-lg p-6">
         <div className="grid grid-cols-3 gap-6">
           {/* Left: Sample Prompts */}
           <div>
@@ -22,7 +22,7 @@ function PromptSelector({ selectedPrompt, setSelectedPrompt, onStart, isRacing }
                   key={index}
                   onClick={() => setSelectedPrompt(prompt)}
                   disabled={isRacing}
-                  className="p-2 rounded-lg text-left text-xs bg-gray-700 hover:bg-gray-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 rounded-lg text-left text-xs bg-redhat-dark-surface/80 hover:bg-redhat-red/20 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {prompt}
                 </button>
@@ -37,14 +37,14 @@ function PromptSelector({ selectedPrompt, setSelectedPrompt, onStart, isRacing }
               value={selectedPrompt}
               onChange={(e) => setSelectedPrompt(e.target.value)}
               disabled={isRacing}
-              className="w-full bg-gray-900 text-white px-4 py-3 rounded h-40 mb-3 disabled:opacity-50"
+              className="w-full bg-redhat-dark-elevated text-white px-4 py-3 rounded h-40 mb-3 disabled:opacity-50"
               placeholder="Type your prompt here or select a sample from the left..."
             />
 
             <button
               onClick={onStart}
               disabled={!selectedPrompt.trim() || isRacing}
-              className="w-full bg-redhat-red text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-red-700 transition disabled:bg-gray-600 disabled:cursor-not-allowed"
+              className="w-full bg-redhat-red text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-red-700 transition disabled:bg-redhat-dark-elevated/50 disabled:cursor-not-allowed"
             >
               {isRacing ? 'Racing... ⏳' : 'Start Race! 🏁'}
             </button>

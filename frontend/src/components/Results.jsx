@@ -3,7 +3,7 @@ function Results({ results, onReset }) {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-gray-800 rounded-lg p-8">
+      <div className="bg-redhat-dark-surface rounded-lg p-8">
         {/* Winner Announcement */}
         <div className="text-center mb-8">
           <div className="text-6xl mb-4">
@@ -79,7 +79,7 @@ function Results({ results, onReset }) {
         </div>
 
         {/* Key Takeaways */}
-        <div className="bg-gray-900 rounded-lg p-6 mb-6">
+        <div className="bg-redhat-dark-elevated rounded-lg p-6 mb-6">
           <h3 className="font-bold text-lg mb-3">Why vLLM is Faster</h3>
           <ul className="space-y-2 text-sm text-gray-300">
             <li className="flex items-start gap-2">
@@ -114,7 +114,7 @@ function Results({ results, onReset }) {
               // TODO: Navigate to stress test mode
               alert('Stress test mode coming soon!')
             }}
-            className="flex-1 bg-gray-700 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition"
+            className="flex-1 bg-redhat-dark-surface/80 text-white px-6 py-3 rounded-lg font-bold hover:bg-redhat-red/20 transition"
           >
             Try Stress Test 💪
           </button>

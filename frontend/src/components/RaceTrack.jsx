@@ -24,7 +24,7 @@ function RaceTrack({ standardTokens, vllmTokens, raceState, winner, wins }) {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-redhat-dark-surface rounded-lg p-6">
 
         {/* Side-by-side racers */}
         <div className="grid grid-cols-2 gap-6">
@@ -46,7 +46,7 @@ function RaceTrack({ standardTokens, vllmTokens, raceState, winner, wins }) {
             </div>
 
             {/* Progress bar */}
-            <div className="relative h-12 bg-gray-900 rounded-lg overflow-hidden border-2 border-green-500 mb-3">
+            <div className="relative h-12 bg-redhat-dark-elevated rounded-lg overflow-hidden border-2 border-green-500 mb-3">
               <div
                 className="absolute h-full bg-gradient-to-r from-green-600 to-green-400 transition-all duration-200"
                 style={{ width: `${vllmProgress}%` }}
@@ -54,7 +54,7 @@ function RaceTrack({ standardTokens, vllmTokens, raceState, winner, wins }) {
             </div>
 
             {/* Token output */}
-            <div className={`bg-gray-900 rounded p-3 h-64 overflow-y-auto text-sm font-mono border-2 transition-all ${
+            <div className={`bg-redhat-dark-elevated rounded p-3 h-64 overflow-y-auto text-sm font-mono border-2 transition-all ${
               winner === 'vllm'
                 ? 'border-yellow-400 animate-pulse shadow-lg shadow-yellow-400/50'
                 : 'border-transparent'
@@ -86,7 +86,7 @@ function RaceTrack({ standardTokens, vllmTokens, raceState, winner, wins }) {
             </div>
 
             {/* Progress bar */}
-            <div className="relative h-12 bg-gray-900 rounded-lg overflow-hidden border-2 border-orange-500 mb-3">
+            <div className="relative h-12 bg-redhat-dark-elevated rounded-lg overflow-hidden border-2 border-orange-500 mb-3">
               <div
                 className="absolute h-full bg-gradient-to-r from-orange-600 to-orange-400 transition-all duration-200"
                 style={{ width: `${standardProgress}%` }}
@@ -94,7 +94,7 @@ function RaceTrack({ standardTokens, vllmTokens, raceState, winner, wins }) {
             </div>
 
             {/* Token output */}
-            <div className={`bg-gray-900 rounded p-3 h-64 overflow-y-auto text-sm font-mono border-2 transition-all ${
+            <div className={`bg-redhat-dark-elevated rounded p-3 h-64 overflow-y-auto text-sm font-mono border-2 transition-all ${
               winner === 'standard'
                 ? 'border-yellow-400 animate-pulse shadow-lg shadow-yellow-400/50'
                 : 'border-transparent'
@@ -111,7 +111,7 @@ function RaceTrack({ standardTokens, vllmTokens, raceState, winner, wins }) {
 
         {/* Overall Score */}
         <div className="mt-6 flex justify-center">
-          <div className="bg-gray-900 rounded-lg p-4 inline-flex items-center gap-6">
+          <div className="bg-redhat-dark-elevated rounded-lg p-4 inline-flex items-center gap-6">
             <div className="text-sm text-gray-400">Overall Score</div>
             <div className="flex items-center gap-4">
               <div className="text-center">

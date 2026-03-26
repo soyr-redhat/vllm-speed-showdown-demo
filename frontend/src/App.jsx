@@ -114,7 +114,6 @@ function App() {
     <div className="min-h-screen bg-redhat-dark-bg text-white">
       {/* Red Hat Brand Visual Elements */}
       <div className="grid-background"></div>
-      <div className="scan-line"></div>
 
       <header className="bg-redhat-dark-surface border-b border-redhat-grid-line relative z-10">
         <div className="container mx-auto px-4 py-6">
