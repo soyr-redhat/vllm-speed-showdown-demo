@@ -43,9 +43,6 @@ function RaceTrack({ standardTokens, vllmTokens, raceState, winner, wins }) {
                   </div>
                 </div>
               </div>
-              <div className="text-xl font-bold text-green-400">
-                {vllmProgress.toFixed(0)}%
-              </div>
             </div>
 
             {/* Progress bar */}
@@ -85,9 +82,6 @@ function RaceTrack({ standardTokens, vllmTokens, raceState, winner, wins }) {
                     {getTokensPerSec(standardTokens)} tokens/sec | {standardTokens.length} tokens
                   </div>
                 </div>
-              </div>
-              <div className="text-xl font-bold text-orange-400">
-                {standardProgress.toFixed(0)}%
               </div>
             </div>
 

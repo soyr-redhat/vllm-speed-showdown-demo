@@ -110,7 +110,7 @@ npm install
 npm run dev
 ```
 
-### Using Docker Compose
+### Using Podman Compose
 ```bash
 # Copy environment files
 cp backend/.env.example backend/.env
@@ -118,7 +118,9 @@ cp frontend/.env.example frontend/.env
 
 # Edit backend/.env with your API keys
 # Start all services
-docker-compose up
+podman-compose up
+# Or use docker-compose if you prefer
+# docker-compose up
 ```
 
 ## Monitoring

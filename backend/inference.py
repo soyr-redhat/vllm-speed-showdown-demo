@@ -43,10 +43,6 @@ class InferenceEngine:
         client = self.vllm_client if racer == "vllm" else self.standard_client
         model = self.vllm_model if racer == "vllm" else self.standard_model
 
-        # For standard inference, add artificial delay to simulate slower processing
-        # In real world, vLLM would naturally be faster due to optimizations
-        delay_per_token = 0.0 if racer == "vllm" else 0.05
-
         start_time = time.time()
         token_count = 0
 
@@ -66,10 +62,6 @@ class InferenceEngine:
                     token = chunk.choices[0].delta.content
                     token_count += 1
                     elapsed = time.time() - start_time
-
-                    # Add delay for standard to show difference
-                    if delay_per_token > 0:
-                        await asyncio.sleep(delay_per_token)
 
                     yield TokenEvent(
                         racer=racer,
@@ -100,7 +92,6 @@ class InferenceEngine:
 
         client = self.vllm_client if racer == "vllm" else self.standard_client
         model = self.vllm_model if racer == "vllm" else self.standard_model
-        delay_per_token = 0.0 if racer == "vllm" else 0.05
 
         start_time = time.time()
         full_text = ""
@@ -120,9 +111,6 @@ class InferenceEngine:
                     token = chunk.choices[0].delta.content
                     full_text += token
                     token_count += 1
-
-                    if delay_per_token > 0:
-                        await asyncio.sleep(delay_per_token)
 
             elapsed = time.time() - start_time
             tokens_per_sec = token_count / elapsed if elapsed > 0 else 0
