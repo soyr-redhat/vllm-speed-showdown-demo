@@ -128,32 +128,13 @@ function App() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        {/* Overall Score */}
-        <div className="max-w-7xl mx-auto mb-6">
-          <div className="bg-gray-800 rounded-lg p-4 flex items-center justify-center gap-8">
-            <div className="text-center">
-              <div className="text-sm text-gray-400 mb-1">Overall Score</div>
-              <div className="flex items-center gap-6">
-                <div className="text-center">
-                  <div className="text-green-400 font-bold text-2xl">{wins.vllm}</div>
-                  <div className="text-xs text-gray-400">vLLM</div>
-                </div>
-                <div className="text-gray-600 font-bold text-xl">-</div>
-                <div className="text-center">
-                  <div className="text-orange-400 font-bold text-2xl">{wins.standard}</div>
-                  <div className="text-xs text-gray-400">Standard</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Race Track - Always visible */}
         <RaceTrack
           standardTokens={standardTokens}
           vllmTokens={vllmTokens}
           raceState={raceState}
           winner={winner}
+          wins={wins}
         />
 
         {/* Prompt Input - Always visible below */}

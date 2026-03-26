@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-function RaceTrack({ standardTokens, vllmTokens, raceState, winner }) {
+function RaceTrack({ standardTokens, vllmTokens, raceState, winner, wins }) {
   const [standardProgress, setStandardProgress] = useState(0)
   const [vllmProgress, setVllmProgress] = useState(0)
 
@@ -16,14 +16,15 @@ function RaceTrack({ standardTokens, vllmTokens, raceState, winner }) {
     return tokens[tokens.length - 1]?.tokens_per_sec?.toFixed(2) || 0
   }
 
+  const CrownIcon = () => (
+    <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 3l2 4 4 1-3 3 1 4-4-2-4 2 1-4-3-3 4-1 2-4z" />
+    </svg>
+  )
+
   return (
     <div className="max-w-7xl mx-auto">
       <div className="bg-gray-800 rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-center mb-6">
-          {raceState === 'idle' ? 'Ready to Race! 🏁' :
-           raceState === 'racing' ? 'Race in Progress! 🏁' :
-           'Race Complete! 🏆'}
-        </h2>
 
         {/* Side-by-side racers */}
         <div className="grid grid-cols-2 gap-6">
@@ -35,7 +36,7 @@ function RaceTrack({ standardTokens, vllmTokens, raceState, winner }) {
                 <div>
                   <div className="font-bold text-green-400 flex items-center gap-2">
                     vLLM Optimized
-                    {winner === 'vllm' && <span className="text-2xl">👑</span>}
+                    {winner === 'vllm' && <CrownIcon />}
                   </div>
                   <div className="text-xs text-gray-400">
                     {getTokensPerSec(vllmTokens)} tokens/sec | {vllmTokens.length} tokens
@@ -53,13 +54,6 @@ function RaceTrack({ standardTokens, vllmTokens, raceState, winner }) {
                 className="absolute h-full bg-gradient-to-r from-green-600 to-green-400 transition-all duration-200"
                 style={{ width: `${vllmProgress}%` }}
               />
-              {/* Race car icon */}
-              <div
-                className="absolute top-1/2 -translate-y-1/2 text-2xl transition-all duration-200"
-                style={{ left: `${Math.min(vllmProgress, 95)}%` }}
-              >
-                🏎️
-              </div>
             </div>
 
             {/* Token output */}
@@ -85,7 +79,7 @@ function RaceTrack({ standardTokens, vllmTokens, raceState, winner }) {
                 <div>
                   <div className="font-bold text-orange-400 flex items-center gap-2">
                     Standard Inference
-                    {winner === 'standard' && <span className="text-2xl">👑</span>}
+                    {winner === 'standard' && <CrownIcon />}
                   </div>
                   <div className="text-xs text-gray-400">
                     {getTokensPerSec(standardTokens)} tokens/sec | {standardTokens.length} tokens
@@ -103,13 +97,6 @@ function RaceTrack({ standardTokens, vllmTokens, raceState, winner }) {
                 className="absolute h-full bg-gradient-to-r from-orange-600 to-orange-400 transition-all duration-200"
                 style={{ width: `${standardProgress}%` }}
               />
-              {/* Race car icon */}
-              <div
-                className="absolute top-1/2 -translate-y-1/2 text-2xl transition-all duration-200"
-                style={{ left: `${Math.min(standardProgress, 95)}%` }}
-              >
-                🚗
-              </div>
             </div>
 
             {/* Token output */}
@@ -128,36 +115,23 @@ function RaceTrack({ standardTokens, vllmTokens, raceState, winner }) {
           </div>
         </div>
 
-        {/* Live comparison stats */}
-        {raceState !== 'idle' && (
-          <div className="grid grid-cols-3 gap-4 mt-6">
-            <div className="bg-gray-900 rounded-lg p-3 text-center">
-              <div className="text-gray-400 text-xs mb-1">Speed Difference</div>
-              <div className="text-xl font-bold text-redhat-red">
-                {vllmTokens.length > 0 && standardTokens.length > 0
-                  ? `${((getTokensPerSec(vllmTokens) / (getTokensPerSec(standardTokens) || 1)) || 1).toFixed(1)}x`
-                  : '-'
-                }
+        {/* Overall Score */}
+        <div className="mt-6 flex justify-center">
+          <div className="bg-gray-900 rounded-lg p-4 inline-flex items-center gap-6">
+            <div className="text-sm text-gray-400">Overall Score</div>
+            <div className="flex items-center gap-4">
+              <div className="text-center">
+                <div className="text-green-400 font-bold text-2xl">{wins.vllm}</div>
+                <div className="text-xs text-gray-400">vLLM</div>
               </div>
-            </div>
-            <div className="bg-gray-900 rounded-lg p-3 text-center">
-              <div className="text-gray-400 text-xs mb-1">vLLM Leading By</div>
-              <div className="text-xl font-bold text-green-400">
-                {vllmTokens.length - standardTokens.length > 0
-                  ? `+${vllmTokens.length - standardTokens.length} tokens`
-                  : '-'
-                }
-              </div>
-            </div>
-            <div className="bg-gray-900 rounded-lg p-3 text-center">
-              <div className="text-gray-400 text-xs mb-1">Current Leader</div>
-              <div className="text-xl font-bold">
-                {vllmTokens.length > standardTokens.length ? '🚀 vLLM' :
-                 standardTokens.length > vllmTokens.length ? '🐢 Standard' : '-'}
+              <div className="text-gray-600 font-bold text-xl">-</div>
+              <div className="text-center">
+                <div className="text-orange-400 font-bold text-2xl">{wins.standard}</div>
+                <div className="text-xs text-gray-400">Standard</div>
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   )
