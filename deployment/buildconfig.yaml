@@ -1,0 +1,64 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: speed-backend
+  namespace: speed-showdown
+spec:
+  triggers:
+  - type: ConfigChange
+  - type: GitHub
+    github:
+      secret: github-webhook-secret
+  source:
+    type: Git
+    git:
+      uri: https://github.com/soyr-redhat/vllm-speed-showdown-demo.git
+    contextDir: backend
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: speed-backend:latest
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: speed-frontend
+  namespace: speed-showdown
+spec:
+  triggers:
+  - type: ConfigChange
+  - type: GitHub
+    github:
+      secret: github-webhook-secret
+  source:
+    type: Git
+    git:
+      uri: https://github.com/soyr-redhat/vllm-speed-showdown-demo.git
+    contextDir: frontend
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Dockerfile
+      buildArgs:
+      - name: VITE_API_URL
+        value: https://speed-backend-speed-showdown.apps.ocp.cloud.rhai-tmm.dev
+  output:
+    to:
+      kind: ImageStreamTag
+      name: speed-frontend:latest
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: speed-backend
+  namespace: speed-showdown
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: speed-frontend
+  namespace: speed-showdown

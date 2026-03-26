@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - VLLM_URL=${VLLM_URL:-http://localhost:8001/v1}
+      - VLLM_API_KEY=${VLLM_API_KEY:-}
+      - STANDARD_LLM_URL=${STANDARD_LLM_URL:-https://api.openai.com/v1}
+      - STANDARD_API_KEY=${STANDARD_API_KEY:-}
+      - MODEL_NAME=${MODEL_NAME:-gpt-3.5-turbo}
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+networks:
+  default:
+    name: speed-showdown-network
