@@ -17,7 +17,7 @@ spec:
   strategy:
     type: Docker
     dockerStrategy:
-      dockerfilePath: Dockerfile
+      dockerfilePath: Containerfile
   output:
     to:
       kind: ImageStreamTag
@@ -42,7 +42,7 @@ spec:
   strategy:
     type: Docker
     dockerStrategy:
-      dockerfilePath: Dockerfile
+      dockerfilePath: Containerfile
       buildArgs:
       - name: VITE_API_URL
         value: https://speed-backend-speed-showdown.apps.ocp.cloud.rhai-tmm.dev
