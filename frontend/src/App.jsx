@@ -11,6 +11,8 @@ function App() {
   const [standardTokens, setStandardTokens] = useState([])
   const [vllmTokens, setVllmTokens] = useState([])
   const [results, setResults] = useState(null)
+  const [winner, setWinner] = useState(null)
+  const [wins, setWins] = useState({ vllm: 0, standard: 0 })
 
   const startRace = () => {
     if (!selectedPrompt.trim()) {
@@ -22,6 +24,7 @@ function App() {
     setStandardTokens([])
     setVllmTokens([])
     setResults(null)
+    setWinner(null)
 
     // Convert http/https to ws/wss for WebSocket
     const wsUrl = API_URL.replace('https://', 'wss://').replace('http://', 'ws://')
@@ -56,8 +59,17 @@ function App() {
         const vllmTime = vllmTokens.length > 0 ?
           vllmTokens[vllmTokens.length - 1].timestamp - vllmTokens[0].timestamp : 0
 
+        const raceWinner = vllmTime < standardTime ? 'vllm' : 'standard'
+        setWinner(raceWinner)
+
+        // Update win counts
+        setWins(prev => ({
+          ...prev,
+          [raceWinner]: prev[raceWinner] + 1
+        }))
+
         setResults({
-          winner: vllmTime < standardTime ? 'vLLM' : 'Standard',
+          winner: raceWinner === 'vllm' ? 'vLLM' : 'Standard',
           speedup: standardTime / vllmTime || 1,
           standardTime,
           vllmTime,
@@ -83,6 +95,7 @@ function App() {
     setStandardTokens([])
     setVllmTokens([])
     setResults(null)
+    setWinner(null)
   }
 
   return (
@@ -103,11 +116,32 @@ function App() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
+        {/* Overall Score */}
+        <div className="max-w-7xl mx-auto mb-6">
+          <div className="bg-gray-800 rounded-lg p-4 flex items-center justify-center gap-8">
+            <div className="text-center">
+              <div className="text-sm text-gray-400 mb-1">Overall Score</div>
+              <div className="flex items-center gap-6">
+                <div className="text-center">
+                  <div className="text-green-400 font-bold text-2xl">{wins.vllm}</div>
+                  <div className="text-xs text-gray-400">vLLM</div>
+                </div>
+                <div className="text-gray-600 font-bold text-xl">-</div>
+                <div className="text-center">
+                  <div className="text-orange-400 font-bold text-2xl">{wins.standard}</div>
+                  <div className="text-xs text-gray-400">Standard</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Race Track - Always visible */}
         <RaceTrack
           standardTokens={standardTokens}
           vllmTokens={vllmTokens}
           raceState={raceState}
+          winner={winner}
         />
 
         {/* Prompt Input - Always visible below */}
@@ -119,15 +153,6 @@ function App() {
             isRacing={raceState === 'racing'}
           />
         </div>
-
-        {/* Results Modal/Overlay */}
-        {raceState === 'finished' && results && (
-          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-            <div className="max-w-4xl w-full">
-              <Results results={results} onReset={reset} />
-            </div>
-          </div>
-        )}
       </main>
 
       <footer className="bg-black border-t border-gray-800 mt-12 py-6">

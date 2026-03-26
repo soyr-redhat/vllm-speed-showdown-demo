@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-function RaceTrack({ standardTokens, vllmTokens, raceState }) {
+function RaceTrack({ standardTokens, vllmTokens, raceState, winner }) {
   const [standardProgress, setStandardProgress] = useState(0)
   const [vllmProgress, setVllmProgress] = useState(0)
 
@@ -33,7 +33,10 @@ function RaceTrack({ standardTokens, vllmTokens, raceState }) {
               <div className="flex items-center gap-2">
                 <div className="text-2xl">🚀</div>
                 <div>
-                  <div className="font-bold text-green-400">vLLM Optimized</div>
+                  <div className="font-bold text-green-400 flex items-center gap-2">
+                    vLLM Optimized
+                    {winner === 'vllm' && <span className="text-2xl">👑</span>}
+                  </div>
                   <div className="text-xs text-gray-400">
                     {getTokensPerSec(vllmTokens)} tokens/sec | {vllmTokens.length} tokens
                   </div>
@@ -60,7 +63,11 @@ function RaceTrack({ standardTokens, vllmTokens, raceState }) {
             </div>
 
             {/* Token output */}
-            <div className="bg-gray-900 rounded p-3 h-64 overflow-y-auto text-sm font-mono">
+            <div className={`bg-gray-900 rounded p-3 h-64 overflow-y-auto text-sm font-mono border-2 transition-all ${
+              winner === 'vllm'
+                ? 'border-yellow-400 animate-pulse shadow-lg shadow-yellow-400/50'
+                : 'border-transparent'
+            }`}>
               {vllmTokens.map((token, i) => (
                 <span key={i} className="text-green-300">{token.token}</span>
               ))}
@@ -76,7 +83,10 @@ function RaceTrack({ standardTokens, vllmTokens, raceState }) {
               <div className="flex items-center gap-2">
                 <div className="text-2xl">🐢</div>
                 <div>
-                  <div className="font-bold text-orange-400">Standard Inference</div>
+                  <div className="font-bold text-orange-400 flex items-center gap-2">
+                    Standard Inference
+                    {winner === 'standard' && <span className="text-2xl">👑</span>}
+                  </div>
                   <div className="text-xs text-gray-400">
                     {getTokensPerSec(standardTokens)} tokens/sec | {standardTokens.length} tokens
                   </div>
@@ -103,7 +113,11 @@ function RaceTrack({ standardTokens, vllmTokens, raceState }) {
             </div>
 
             {/* Token output */}
-            <div className="bg-gray-900 rounded p-3 h-64 overflow-y-auto text-sm font-mono">
+            <div className={`bg-gray-900 rounded p-3 h-64 overflow-y-auto text-sm font-mono border-2 transition-all ${
+              winner === 'standard'
+                ? 'border-yellow-400 animate-pulse shadow-lg shadow-yellow-400/50'
+                : 'border-transparent'
+            }`}>
               {standardTokens.map((token, i) => (
                 <span key={i} className="text-orange-300">{token.token}</span>
               ))}
