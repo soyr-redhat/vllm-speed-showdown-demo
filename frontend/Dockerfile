@@ -1,5 +1,9 @@
 FROM node:20-alpine AS builder
 
+# Accept build arg
+ARG VITE_API_URL=http://localhost:8000
+ENV VITE_API_URL=$VITE_API_URL
+
 WORKDIR /app
 
 # Copy package files
@@ -9,7 +13,7 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Build the application
+# Build the application with the API URL baked in
 RUN npm run build
 
 # Production stage - use unprivileged nginx for OpenShift
