@@ -59,16 +59,21 @@ jobs:
         run: |
           oc apply -f deployment/buildconfig.yaml -n ${{ env.NAMESPACE }}
 
-      - name: Trigger builds
+      - name: Trigger builds and wait
         run: |
-          oc start-build speed-backend -n ${{ env.NAMESPACE }} &
-          oc start-build speed-frontend -n ${{ env.NAMESPACE }} &
-          wait
+          echo "Starting backend build..."
+          BACKEND_BUILD=$(oc start-build speed-backend -n ${{ env.NAMESPACE }} -o name)
+          echo "Backend build: $BACKEND_BUILD"
 
-      - name: Wait for builds to complete
-        run: |
-          oc wait --for=condition=Complete --timeout=10m build -l buildconfig=speed-backend -n ${{ env.NAMESPACE }}
-          oc wait --for=condition=Complete --timeout=10m build -l buildconfig=speed-frontend -n ${{ env.NAMESPACE }}
+          echo "Starting frontend build..."
+          FRONTEND_BUILD=$(oc start-build speed-frontend -n ${{ env.NAMESPACE }} -o name)
+          echo "Frontend build: $FRONTEND_BUILD"
+
+          echo "Waiting for builds to complete..."
+          oc wait --for=condition=Complete --timeout=10m $BACKEND_BUILD -n ${{ env.NAMESPACE }}
+          oc wait --for=condition=Complete --timeout=10m $FRONTEND_BUILD -n ${{ env.NAMESPACE }}
+
+          echo "Both builds completed successfully!"
 
       - name: Apply deployment manifests
         run: |
