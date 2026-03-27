@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import RaceTrack from './components/RaceTrack'
 import PromptSelector from './components/PromptSelector'
 import Results from './components/Results'
@@ -14,6 +14,24 @@ function App() {
   const [results, setResults] = useState(null)
   const [winner, setWinner] = useState(null)
   const [wins, setWins] = useState({ standard: 0, optimized: 0, quantized: 0 })
+
+  // Load global wins on mount and poll for updates
+  useEffect(() => {
+    const loadWins = async () => {
+      try {
+        const response = await fetch(`${API_URL}/wins`)
+        const data = await response.json()
+        setWins(data)
+      } catch (error) {
+        console.error('Failed to load wins:', error)
+      }
+    }
+
+    loadWins()
+    // Poll for updates every 5 seconds
+    const interval = setInterval(loadWins, 5000)
+    return () => clearInterval(interval)
+  }, [])
 
   const startRace = () => {
     if (!selectedPrompt.trim()) {
@@ -82,11 +100,11 @@ function App() {
                 const raceWinner = Object.keys(times).reduce((a, b) => times[a] < times[b] ? a : b)
                 setWinner(raceWinner)
 
-                // Update win counts
-                setWins(prev => ({
-                  ...prev,
-                  [raceWinner]: prev[raceWinner] + 1
-                }))
+                // Update win counts on backend (persistent across all users)
+                fetch(`${API_URL}/wins/${raceWinner}`, { method: 'POST' })
+                  .then(response => response.json())
+                  .then(updatedWins => setWins(updatedWins))
+                  .catch(error => console.error('Failed to update wins:', error))
 
                 setResults({
                   winner: raceWinner.charAt(0).toUpperCase() + raceWinner.slice(1),

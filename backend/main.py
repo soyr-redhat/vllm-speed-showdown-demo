@@ -1,9 +1,11 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List
+from typing import List, Dict
 import asyncio
 import time
 import json
+import os
+from pathlib import Path
 from models import (
     RaceRequest, RaceResults, LeaderboardEntry,
     StressTestConfig, StressTestResults, PromptCategory
@@ -24,6 +26,30 @@ app.add_middleware(
 # Global state
 engine = InferenceEngine()
 leaderboard: List[LeaderboardEntry] = []
+
+# Persistent scoreboard
+SCOREBOARD_FILE = Path(os.getenv("SCOREBOARD_PATH", "/tmp/vllm_scoreboard.json"))
+
+def load_wins() -> Dict[str, int]:
+    """Load wins from persistent storage"""
+    if SCOREBOARD_FILE.exists():
+        try:
+            with open(SCOREBOARD_FILE, 'r') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading scoreboard: {e}")
+    return {"standard": 0, "optimized": 0, "quantized": 0}
+
+def save_wins(wins: Dict[str, int]):
+    """Save wins to persistent storage"""
+    try:
+        with open(SCOREBOARD_FILE, 'w') as f:
+            json.dump(wins, f)
+    except Exception as e:
+        print(f"Error saving scoreboard: {e}")
+
+# Load wins on startup
+global_wins = load_wins()
 
 # Sample prompts by category
 SAMPLE_PROMPTS = {
@@ -66,6 +92,21 @@ async def root():
 async def get_sample_prompts(category: PromptCategory):
     """Get sample prompts for a category"""
     return {"prompts": SAMPLE_PROMPTS.get(category, [])}
+
+@app.get("/wins")
+async def get_wins():
+    """Get current global win counts"""
+    return global_wins
+
+@app.post("/wins/{racer}")
+async def increment_win(racer: str):
+    """Increment win count for a racer"""
+    global global_wins
+    if racer in global_wins:
+        global_wins[racer] += 1
+        save_wins(global_wins)
+        return global_wins
+    return {"error": "Invalid racer"}, 400
 
 @app.websocket("/ws/race")
 async def race_websocket(websocket: WebSocket):

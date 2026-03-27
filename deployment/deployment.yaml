@@ -9,7 +9,7 @@ metadata:
   annotations:
     image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"speed-backend:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"backend\")].image"}]'
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: speed-backend
@@ -18,6 +18,10 @@ spec:
       labels:
         app: speed-backend
     spec:
+      volumes:
+      - name: scoreboard-storage
+        persistentVolumeClaim:
+          claimName: scoreboard-storage
       containers:
       - name: backend
         image: image-registry.openshift-image-registry.svc:5000/speed-showdown/speed-backend:latest
@@ -61,6 +65,11 @@ spec:
             configMapKeyRef:
               name: speed-showdown-config
               key: vllm-quantized-model
+        - name: SCOREBOARD_PATH
+          value: /data/scoreboard.json
+        volumeMounts:
+        - name: scoreboard-storage
+          mountPath: /data
         resources:
           requests:
             memory: "256Mi"
