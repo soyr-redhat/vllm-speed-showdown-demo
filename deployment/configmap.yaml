@@ -5,9 +5,9 @@ metadata:
   labels:
     app: speed-showdown
 data:
-  vllm-standard-url: "http://vllm-standard:8000/v1"
-  vllm-optimized-url: "http://vllm-optimized:8000/v1"
-  vllm-quantized-url: "http://vllm-quantized:8000/v1"
-  vllm-standard-model: "mistralai/Mistral-Small-Instruct-2409"
-  vllm-optimized-model: "mistralai/Mistral-Small-Instruct-2409"
-  vllm-quantized-model: "RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-FP8-dynamic"
+  vllm-standard-url: "http://vllm-standard.user-sbowerma.svc.cluster.local:8000/v1"
+  vllm-optimized-url: "http://vllm-optimized.user-sbowerma.svc.cluster.local:8000/v1"
+  vllm-quantized-url: "http://vllm-quantized.user-sbowerma.svc.cluster.local:8000/v1"
+  vllm-standard-model: "mistralai/Mistral-7B-Instruct-v0.3"
+  vllm-optimized-model: "mistralai/Mistral-7B-Instruct-v0.3"
+  vllm-quantized-model: "RedHatAI/Mistral-7B-Instruct-v0.3-quantized.w4a16"

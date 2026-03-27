@@ -2,10 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: vllm-optimized
-  namespace: speed-showdown
+  namespace: user-sbowerma
   labels:
     app: vllm-optimized
     vllm-type: optimized
+    kueue.x-k8s.io/queue-name: unreserved
 spec:
   replicas: 1
   selector:
@@ -16,14 +17,29 @@ spec:
       labels:
         app: vllm-optimized
         vllm-type: optimized
+        kueue.x-k8s.io/queue-name: unreserved
     spec:
       containers:
       - name: vllm
-        image: vllm/vllm-openai:latest
+        image: vllm/vllm-openai:v0.6.2
         ports:
         - containerPort: 8000
           name: http
         env:
+        - name: HOME
+          value: /tmp
+        - name: HF_HOME
+          value: /tmp/huggingface
+        - name: VLLM_CACHE_ROOT
+          value: /tmp/vllm
+        - name: XDG_CACHE_HOME
+          value: /tmp/cache
+        - name: TMPDIR
+          value: /tmp
+        - name: OUTLINES_CACHE_DIR
+          value: /tmp/outlines
+        - name: FLASHINFER_WORKSPACE_DIR
+          value: /tmp/flashinfer
         - name: HUGGING_FACE_HUB_TOKEN
           valueFrom:
             secretKeyRef:
@@ -32,30 +48,29 @@ spec:
               optional: true
         args:
         - --model
-        - mistralai/Mistral-Small-Instruct-2409
+        - mistralai/Mistral-7B-Instruct-v0.3
         - --host
         - "0.0.0.0"
         - --port
         - "8000"
         - --max-model-len
-        - "8192"
+        - "2048"
         - --gpu-memory-utilization
         - "0.95"
-        # Optimization flags
+        # Modern optimization flags
         - --enable-chunked-prefill
         - --enable-prefix-caching
         - --max-num-batched-tokens
         - "16384"
         - --max-num-seqs
         - "256"
-        - --disable-log-requests
+        # Trust remote code for model flexibility
+        - --trust-remote-code
         resources:
           requests:
-            memory: "18Gi"
-            cpu: "4000m"
+            nvidia.com/mig-1g.18gb: "1"
           limits:
-            memory: "18Gi"
-            cpu: "8000m"
+            nvidia.com/mig-1g.18gb: "1"
         livenessProbe:
           httpGet:
             path: /health
@@ -75,7 +90,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: vllm-optimized
-  namespace: speed-showdown
+  namespace: user-sbowerma
   labels:
     app: vllm-optimized
 spec:

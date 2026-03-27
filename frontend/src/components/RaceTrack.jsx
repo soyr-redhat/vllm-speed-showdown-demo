@@ -4,6 +4,7 @@ function RaceTrack({ standardTokens, optimizedTokens, quantizedTokens, raceState
   const [standardProgress, setStandardProgress] = useState(0)
   const [optimizedProgress, setOptimizedProgress] = useState(0)
   const [quantizedProgress, setQuantizedProgress] = useState(0)
+  const [activeInfo, setActiveInfo] = useState(null) // 'standard', 'optimized', 'quantized', or null
 
   useEffect(() => {
     // Update progress based on token count (each token = progress increment)
@@ -24,8 +25,142 @@ function RaceTrack({ standardTokens, optimizedTokens, quantizedTokens, raceState
     </svg>
   )
 
+  const InfoButton = ({ onClick }) => (
+    <button
+      onClick={onClick}
+      className="ml-2 w-5 h-5 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-xs text-gray-300 hover:text-white transition-all border border-gray-600 hover:border-gray-500"
+      title="Learn more"
+    >
+      i
+    </button>
+  )
+
+  const racerInfo = {
+    standard: {
+      title: 'Standard vLLM',
+      icon: '🐢',
+      color: 'orange',
+      description: 'Baseline vLLM deployment with default configuration',
+      model: 'Mistral-7B-Instruct-v0.3',
+      features: [
+        { name: 'PagedAttention', desc: 'Efficient KV cache memory management' },
+        { name: 'Continuous Batching', desc: 'Process multiple requests without waiting' },
+        { name: 'Default Settings', desc: 'Standard GPU memory utilization (90%)' },
+        { name: 'OpenAI-compatible API', desc: 'Drop-in replacement for OpenAI endpoints' }
+      ],
+      optimizations: 'Basic vLLM optimizations enabled'
+    },
+    optimized: {
+      title: 'Optimized vLLM',
+      icon: '⚡',
+      color: 'blue',
+      description: 'Enhanced vLLM with advanced performance optimizations',
+      model: 'Mistral-7B-Instruct-v0.3',
+      features: [
+        { name: 'Chunked Prefill', desc: 'Break down long prompts for better scheduling' },
+        { name: 'Prefix Caching', desc: 'Reuse KV cache for common prompt prefixes' },
+        { name: 'V2 Block Manager', desc: 'Latest block manager with improved efficiency' },
+        { name: 'Increased Batching', desc: '16K max batched tokens, 256 max sequences' },
+        { name: 'Zero Scheduler Delay', desc: 'Immediate request scheduling for lowest latency' },
+        { name: 'Higher GPU Utilization', desc: '95% GPU memory utilization for max throughput' }
+      ],
+      optimizations: 'Advanced performance optimizations enabled'
+    },
+    quantized: {
+      title: 'Quantized vLLM (W4A16)',
+      icon: '🚀',
+      color: 'green',
+      description: 'Optimized vLLM with W4A16 quantization for efficiency',
+      model: 'RedHatAI/Mistral-7B-Instruct-v0.3-quantized.w4a16',
+      features: [
+        { name: 'W4A16 Quantization', desc: '4-bit weights, 16-bit activations for 4x memory efficiency' },
+        { name: 'All Core Optimizations', desc: 'Chunked prefill, prefix caching, increased batching' },
+        { name: 'Maintained Accuracy', desc: 'W4A16 preserves model quality vs FP16' },
+        { name: 'Maximum Efficiency', desc: 'Best tokens/sec per watt and per GB of memory' },
+        { name: 'Smaller Memory Footprint', desc: 'Fit larger batches in same GPU memory' },
+        { name: 'RedHat AI Optimized', desc: 'Professionally quantized by Red Hat AI team' }
+      ],
+      optimizations: 'Cutting-edge vLLM v0.18.0 with W4A16 quantization'
+    }
+  }
+
+  const InfoModal = ({ racer, onClose }) => {
+    const info = racerInfo[racer]
+    if (!info) return null
+
+    const colorClasses = {
+      orange: 'border-orange-500 from-orange-900/30',
+      blue: 'border-blue-500 from-blue-900/30',
+      green: 'border-green-500 from-green-900/30'
+    }
+
+    return (
+      <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={onClose}>
+        <div
+          className={`bg-redhat-dark-surface rounded-lg max-w-2xl w-full border-2 ${colorClasses[info.color]} bg-gradient-to-br ${colorClasses[info.color]} to-gray-900 shadow-2xl`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="p-6 border-b border-gray-700">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="text-4xl">{info.icon}</div>
+                <div>
+                  <h3 className="text-2xl font-bold">{info.title}</h3>
+                  <p className="text-gray-400 text-sm mt-1">{info.description}</p>
+                </div>
+              </div>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-white text-2xl leading-none w-8 h-8 flex items-center justify-center rounded hover:bg-gray-700"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="p-6 space-y-6">
+            {/* Model Info */}
+            <div>
+              <div className="text-sm text-gray-400 font-mono uppercase tracking-wider mb-1">Model</div>
+              <div className="text-lg font-mono bg-redhat-dark-elevated px-3 py-2 rounded border border-gray-700">
+                {info.model}
+              </div>
+            </div>
+
+            {/* Features */}
+            <div>
+              <div className="text-sm text-gray-400 font-mono uppercase tracking-wider mb-3">Features & Capabilities</div>
+              <div className="space-y-3">
+                {info.features.map((feature, idx) => (
+                  <div key={idx} className="flex gap-3">
+                    <div className={`text-${info.color}-400 mt-1 flex-shrink-0`}>✓</div>
+                    <div>
+                      <div className="font-bold text-sm">{feature.name}</div>
+                      <div className="text-sm text-gray-400">{feature.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Optimization Level */}
+            <div className={`bg-gradient-to-r from-${info.color}-900/20 to-transparent rounded-lg p-4 border border-${info.color}-500/30`}>
+              <div className="text-sm text-gray-400 font-mono uppercase tracking-wider mb-1">Optimization Level</div>
+              <div className="text-sm">{info.optimizations}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="max-w-7xl mx-auto">
+      {/* Info Modal */}
+      {activeInfo && <InfoModal racer={activeInfo} onClose={() => setActiveInfo(null)} />}
+
       <div className="bg-redhat-dark-surface rounded-lg p-4">
 
         {/* Three-way race */}
@@ -36,8 +171,9 @@ function RaceTrack({ standardTokens, optimizedTokens, quantizedTokens, raceState
               <div className="flex items-center gap-2">
                 <div className="text-2xl">🐢</div>
                 <div>
-                  <div className="font-bold text-orange-400 flex items-center gap-2">
+                  <div className="font-bold text-orange-400 flex items-center">
                     Standard
+                    <InfoButton onClick={() => setActiveInfo('standard')} />
                     {winner === 'standard' && <CrownIcon />}
                   </div>
                   <div className="text-xs text-gray-400">
@@ -76,8 +212,9 @@ function RaceTrack({ standardTokens, optimizedTokens, quantizedTokens, raceState
               <div className="flex items-center gap-2">
                 <div className="text-2xl">⚡</div>
                 <div>
-                  <div className="font-bold text-blue-400 flex items-center gap-2">
+                  <div className="font-bold text-blue-400 flex items-center">
                     Optimized
+                    <InfoButton onClick={() => setActiveInfo('optimized')} />
                     {winner === 'optimized' && <CrownIcon />}
                   </div>
                   <div className="text-xs text-gray-400">
@@ -116,8 +253,9 @@ function RaceTrack({ standardTokens, optimizedTokens, quantizedTokens, raceState
               <div className="flex items-center gap-2">
                 <div className="text-2xl">🚀</div>
                 <div>
-                  <div className="font-bold text-green-400 flex items-center gap-2">
+                  <div className="font-bold text-green-400 flex items-center">
                     Quantized
+                    <InfoButton onClick={() => setActiveInfo('quantized')} />
                     {winner === 'quantized' && <CrownIcon />}
                   </div>
                   <div className="text-xs text-gray-400">
