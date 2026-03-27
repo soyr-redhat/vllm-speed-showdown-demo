@@ -81,7 +81,7 @@ function RaceTrack({ standardTokens, optimizedTokens, quantizedTokens, raceState
         { name: 'Smaller Memory Footprint', desc: 'Fit larger batches in same GPU memory' },
         { name: 'RedHat AI Optimized', desc: 'Professionally quantized by Red Hat AI team' }
       ],
-      optimizations: 'Cutting-edge vLLM v0.18.0 with W4A16 quantization'
+      optimizations: 'Advanced vLLM configuration with W4A16 quantization for maximum efficiency'
     }
   }
 
