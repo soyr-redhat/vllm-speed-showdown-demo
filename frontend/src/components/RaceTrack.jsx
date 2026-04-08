@@ -7,18 +7,23 @@ function RaceTrack({ standardTokens, optimizedTokens, quantizedTokens, raceState
   const [activeInfo, setActiveInfo] = useState(null) // 'standard', 'optimized', 'quantized', or null
 
   useEffect(() => {
-    // Update progress based on relative completion - whoever has most tokens is at 100%
-    const maxTokensGenerated = Math.max(
-      standardTokens.length,
-      optimizedTokens.length,
-      quantizedTokens.length,
-      1 // Prevent division by zero
-    )
+    // Progress based on tokens generated - fastest racer (highest TPS) generates more tokens faster
+    // When race finishes, show 100% for all completed racers
+    const maxTokens = 100 // Expected max tokens from App.jsx
 
-    setStandardProgress((standardTokens.length / maxTokensGenerated) * 100)
-    setOptimizedProgress((optimizedTokens.length / maxTokensGenerated) * 100)
-    setQuantizedProgress((quantizedTokens.length / maxTokensGenerated) * 100)
-  }, [standardTokens, optimizedTokens, quantizedTokens])
+    if (raceState === 'finished') {
+      // When finished, all racers that completed show 100%
+      setStandardProgress(standardTokens.length > 0 ? 100 : 0)
+      setOptimizedProgress(optimizedTokens.length > 0 ? 100 : 0)
+      setQuantizedProgress(quantizedTokens.length > 0 ? 100 : 0)
+    } else {
+      // While racing, show progress based on token count
+      // Fastest racer (highest TPS) fills bar faster by generating tokens faster
+      setStandardProgress(Math.min((standardTokens.length / maxTokens) * 100, 100))
+      setOptimizedProgress(Math.min((optimizedTokens.length / maxTokens) * 100, 100))
+      setQuantizedProgress(Math.min((quantizedTokens.length / maxTokens) * 100, 100))
+    }
+  }, [standardTokens, optimizedTokens, quantizedTokens, raceState])
 
   const getTokensPerSec = (tokens) => {
     if (tokens.length === 0) return 0

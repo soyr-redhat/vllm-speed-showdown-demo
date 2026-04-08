@@ -1,0 +1,62 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: gemma4-backend
+  namespace: user-sbowerma
+spec: {}
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: gemma4-frontend
+  namespace: user-sbowerma
+spec: {}
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: gemma4-backend
+  namespace: user-sbowerma
+spec:
+  output:
+    to:
+      kind: ImageStreamTag
+      name: gemma4-backend:latest
+  source:
+    contextDir: 1_inference_vllm/backend
+    git:
+      uri: https://github.com/sawyerbowerman/4_pillars_demos
+      ref: main
+    type: Git
+  strategy:
+    dockerStrategy:
+      dockerfilePath: Containerfile
+    type: Docker
+  triggers:
+  - type: ConfigChange
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: gemma4-frontend
+  namespace: user-sbowerma
+spec:
+  output:
+    to:
+      kind: ImageStreamTag
+      name: gemma4-frontend:latest
+  source:
+    contextDir: 1_inference_vllm/frontend
+    git:
+      uri: https://github.com/sawyerbowerman/4_pillars_demos
+      ref: main
+    type: Git
+  strategy:
+    dockerStrategy:
+      dockerfilePath: Containerfile
+      buildArgs:
+      - name: VITE_API_URL
+        value: https://gemma4-backend-user-sbowerma.apps.ocp.cloud.rhai-tmm.dev
+    type: Docker
+  triggers:
+  - type: ConfigChange

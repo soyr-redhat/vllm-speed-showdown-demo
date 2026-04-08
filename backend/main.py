@@ -271,6 +271,73 @@ async def get_leaderboard():
     """Get top leaderboard entries"""
     return {"leaderboard": sorted(leaderboard, key=lambda x: x.max_throughput, reverse=True)[:10]}
 
+@app.websocket("/ws/compare")
+async def compare_websocket(websocket: WebSocket):
+    """WebSocket endpoint for side-by-side comparison of standard vs quantized"""
+    await websocket.accept()
+
+    try:
+        # Receive prompt
+        data = await websocket.receive_text()
+        request_data = json.loads(data)
+        prompt = request_data.get("prompt", "")
+
+        # Stream both models concurrently
+        async def stream_model(model_type: str):
+            start_time = time.time()
+            first_token_time = None
+            token_count = 0
+
+            async for token_event in engine.stream_tokens(prompt, model_type, max_tokens=512):
+                if first_token_time is None:
+                    first_token_time = time.time()
+
+                token_count += 1
+
+                # Send token to frontend
+                await websocket.send_json({
+                    "type": "token",
+                    "model": model_type,
+                    "token": token_event.token,
+                    "timestamp": token_event.timestamp
+                })
+
+            # Calculate metrics
+            end_time = time.time()
+            total_time = end_time - start_time
+            ttft = (first_token_time - start_time) * 1000 if first_token_time else 0
+            tps = token_count / total_time if total_time > 0 else 0
+
+            # Send completion with metrics
+            await websocket.send_json({
+                "type": "complete",
+                "model": model_type,
+                "metrics": {
+                    "tps": tps,
+                    "ttft": ttft,
+                    "totalTime": total_time,
+                    "tokenCount": token_count
+                }
+            })
+
+        # Run both models concurrently
+        await asyncio.gather(
+            stream_model("standard"),
+            stream_model("quantized")
+        )
+
+        # Send done signal
+        await websocket.send_json({"type": "done"})
+
+    except WebSocketDisconnect:
+        print("Client disconnected from compare")
+    except Exception as e:
+        print(f"Error in compare WebSocket: {e}")
+        try:
+            await websocket.send_json({"type": "error", "message": str(e)})
+        except:
+            pass
+
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
