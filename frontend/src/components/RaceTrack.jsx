@@ -7,11 +7,17 @@ function RaceTrack({ standardTokens, optimizedTokens, quantizedTokens, raceState
   const [activeInfo, setActiveInfo] = useState(null) // 'standard', 'optimized', 'quantized', or null
 
   useEffect(() => {
-    // Update progress based on token count (each token = progress increment)
-    const maxTokens = 100 // match the max in App.jsx
-    setStandardProgress((standardTokens.length / maxTokens) * 100)
-    setOptimizedProgress((optimizedTokens.length / maxTokens) * 100)
-    setQuantizedProgress((quantizedTokens.length / maxTokens) * 100)
+    // Update progress based on relative completion - whoever has most tokens is at 100%
+    const maxTokensGenerated = Math.max(
+      standardTokens.length,
+      optimizedTokens.length,
+      quantizedTokens.length,
+      1 // Prevent division by zero
+    )
+
+    setStandardProgress((standardTokens.length / maxTokensGenerated) * 100)
+    setOptimizedProgress((optimizedTokens.length / maxTokensGenerated) * 100)
+    setQuantizedProgress((quantizedTokens.length / maxTokensGenerated) * 100)
   }, [standardTokens, optimizedTokens, quantizedTokens])
 
   const getTokensPerSec = (tokens) => {
