@@ -43,7 +43,7 @@ function RaceTrack({ standardTokens, optimizedTokens, quantizedTokens, raceState
   const InfoButton = ({ onClick }) => (
     <button
       onClick={onClick}
-      className="ml-2 w-5 h-5 rounded-full bg-redhat-dark-surface hover:bg-redhat-dark-elevated flex items-center justify-center text-xs text-redhat-text-secondary hover:text-white transition-all border border-redhat-grid-line hover:border-redhat-grid-line"
+      className="ml-2 w-5 h-5 rounded-full bg-redhat-dark-surface text-redhat-text-primary hover:bg-redhat-dark-elevated hover:text-white flex items-center justify-center text-xs text-redhat-text-secondary hover:text-redhat-text-primary transition-all border border-redhat-grid-line hover:border-redhat-grid-line"
       title="Learn more"
     >
       i
@@ -128,7 +128,7 @@ function RaceTrack({ standardTokens, optimizedTokens, quantizedTokens, raceState
               </div>
               <button
                 onClick={onClose}
-                className="text-redhat-text-secondary hover:text-white text-2xl leading-none w-8 h-8 flex items-center justify-center rounded hover:bg-redhat-dark-surface"
+                className="text-redhat-text-secondary hover:text-white text-2xl leading-none w-8 h-8 flex items-center justify-center rounded text-redhat-text-primary hover:bg-redhat-dark-surface"
               >
                 ×
               </button>
