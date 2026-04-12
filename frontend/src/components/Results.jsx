@@ -114,7 +114,7 @@ function Results({ results, onReset }) {
               // TODO: Navigate to stress test mode
               alert('Stress test mode coming soon!')
             }}
-            className="flex-1 bg-redhat-dark-surface/80 text-white px-6 py-3 rounded-lg font-bold hover:bg-redhat-red/20 transition"
+            className="flex-1 bg-redhat-dark-surface/80 text-redhat-text-primary px-6 py-3 rounded-lg font-bold hover:bg-redhat-red/20 transition"
           >
             Try Stress Test 💪
           </button>

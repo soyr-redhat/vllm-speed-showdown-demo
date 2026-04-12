@@ -71,7 +71,7 @@ function MetricsPanel({ title, model, data, isStreaming, accentColor = 'orange',
               </span>
             )}
           </div>
-          <div className="text-white whitespace-pre-wrap font-mono text-xs leading-relaxed">
+          <div className="text-redhat-text-primary whitespace-pre-wrap font-mono text-xs leading-relaxed">
             {data.text || <span className="text-redhat-text-tertiary italic">Waiting for response...</span>}
           </div>
         </div>

@@ -105,7 +105,7 @@ function Gemma4Compare() {
   }
 
   return (
-    <div className="min-h-screen bg-redhat-dark-bg text-white">
+    <div className="min-h-screen bg-redhat-dark-bg text-redhat-text-primary">
       {/* Grid background */}
       <div className="grid-background"></div>
 
@@ -138,7 +138,7 @@ function Gemma4Compare() {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="Type your prompt here..."
-            className="w-full bg-redhat-dark-bg border border-redhat-grid-line rounded px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-redhat-red resize-none"
+            className="w-full bg-redhat-dark-bg border border-redhat-grid-line rounded px-4 py-3 text-redhat-text-primary font-mono text-sm focus:outline-none focus:border-redhat-red resize-none"
             rows={3}
             disabled={compareState === 'streaming'}
           />
@@ -174,7 +174,7 @@ function Gemma4Compare() {
             {compareState === 'complete' && (
               <button
                 onClick={reset}
-                className="px-6 py-3 bg-redhat-dark-bg border border-redhat-grid-line text-white font-mono rounded hover:border-redhat-red transition-colors"
+                className="px-6 py-3 bg-redhat-dark-bg border border-redhat-grid-line text-redhat-text-primary font-mono rounded hover:border-redhat-red transition-colors"
               >
                 Reset
               </button>

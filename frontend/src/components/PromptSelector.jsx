@@ -37,7 +37,7 @@ function PromptSelector({ selectedPrompt, setSelectedPrompt, onStart, isRacing }
               value={selectedPrompt}
               onChange={(e) => setSelectedPrompt(e.target.value)}
               disabled={isRacing}
-              className="w-full bg-redhat-dark-elevated text-white px-4 py-3 rounded h-32 mb-3 disabled:opacity-50"
+              className="w-full bg-redhat-dark-elevated text-redhat-text-primary px-4 py-3 rounded h-32 mb-3 disabled:opacity-50"
               placeholder="Type your prompt here or select a sample from the left..."
             />
 
